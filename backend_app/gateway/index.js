@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const proxy = require("express-http-proxy");
 
+const PORT = process.env.PORT || 8000;
+
 const app = express();
 
 app.use(cors());
@@ -24,7 +26,7 @@ app.use("/group", proxy("http://localhost:8004", {
   }
 }));
 
-app.listen(8000, () => {
+app.listen(PORT, () => {
   console.log("🚀 Gateway is Listening to Port 8000");
   console.log("📍 Routes configured:");
   console.log("   /customer -> http://localhost:8001");
