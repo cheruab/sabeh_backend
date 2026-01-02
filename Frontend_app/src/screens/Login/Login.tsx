@@ -176,8 +176,8 @@ export const Login = ({ }) => {
                 padding: 5
               }} > By continuing, you agree to our Terms of service & Privacy policy </Text>
             </SafeAreaView> 
-
-  
+           
+          
           </>
       }
     </>

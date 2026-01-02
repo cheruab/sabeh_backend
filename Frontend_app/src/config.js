@@ -2,10 +2,9 @@
 import axios from "axios";
 
 // ✅ PRODUCTION URL - Replace with your actual Railway URL
+
 const PRODUCTION_URL = "https://sabehbackend-production.up.railway.app";
 
-// ✅ DEVELOPMENT URL - For emulator testing
-const DEVELOPMENT_URL = "http://10.0.2.2:8000";
 
 // ✅ Automatically use production URL when building release APK
 export const BASE_URL = __DEV__ ? DEVELOPMENT_URL : PRODUCTION_URL;
