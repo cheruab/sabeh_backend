@@ -7,8 +7,8 @@ const {
   EXCHANGE_NAME,
   MSG_QUEUE_URL,
   CUSTOMER_BINDING_KEY,
-} = require("../config"); 
-const { SHOPPING_BINDING_KEY } = require("../../../customer/src/config");
+} = require("../config");
+const { SHOPPING_BINDING_KEY } = require("../config");
 
 //Utility functions
 module.exports.GenerateSalt = async () => {
@@ -57,44 +57,37 @@ module.exports.FormateData = (data) => {
   }
 };
 
-module.exports.PublishCustomerEvent = async (payload) => {
-  axios.post("http://localhost:8000/customer/app-events/", {
-    payload,
-  });
-
+module.exports.PublishMessage = async (channel, binding_key, message) => {
+  if (!channel) return;
+  channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message));
+  console.log("Sent: ", message);
 };
-
 
 /* ---------------------------------------------------------Message Broker -------------------------------------------------------*/
 
-// create a channel
 module.exports.CreateChannel = async () => {
+  if (process.env.ENABLE_MQ !== "true") {
+    console.log("⚠️ Message Queue disabled");
+    return null;
+  }
+
   try {
     const connection = await amqplib.connect(MSG_QUEUE_URL);
     const channel = await connection.createChannel();
     await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
     return channel;
   } catch (error) {
-    throw error;
+    console.error("❌ MQ connection failed:", error.message);
+    return null;
   }
 };
-
-// publish messages
-module.exports.PublishMessage = async (channel, binding_key, message) => {
-  try {
-    channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message));
-    console.log("Sent: ", message);
-  } catch (error) {
-    throw error;
-  }
-};
-
 
 module.exports.SubscribeMessage = async (channel, service) => {
+  if (!channel) return;
   const appQueue = await channel.assertQueue(QUEUE_NAME);
   channel.bindQueue(appQueue.queue, EXCHANGE_NAME, SHOPPING_BINDING_KEY);
   channel.consume(appQueue.queue, (data) => {
-    console.log("received data in shopping service");
+    console.log("received data in group service");
     console.log(data.content.toString());
     service.SubscribeEvents(data.content.toString());
     channel.ack(data);
