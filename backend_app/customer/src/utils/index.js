@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const amqplib = require("amqplib");
 const {
@@ -7,7 +7,7 @@ const {
   EXCHANGE_NAME,
   MSG_QUEUE_URL,
   CUSTOMER_BINDING_KEY,
-} = require("../config");
+} = require("../config"); 
 
 //Utility functions
 module.exports.GenerateSalt = async () => {
@@ -60,27 +60,30 @@ module.exports.FormateData = (data) => {
 
 /* ---------------------------------------------------------Message Broker -------------------------------------------------------*/
 
-// create a channel safely
+// create a channel
 module.exports.CreateChannel = async () => {
-  if (process.env.ENABLE_MQ !== "true") {
-    console.log("⚠️ Message Queue disabled");
-    return null;
-  }
-
   try {
     const connection = await amqplib.connect(MSG_QUEUE_URL);
     const channel = await connection.createChannel();
     await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
     return channel;
   } catch (error) {
-    console.error("❌ MQ connection failed:", error.message);
-    return null;
+    throw error;
   }
 };
 
-// subscribe messages safely
+// publish messages - in customer service we are not publishing anything 
+// module.exports.PublishMessage = async (channel, binding_key, message) => {
+//   try {
+//     channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message));
+//     console.log("Sent: ", message);
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// subscribe messages
 module.exports.SubscribeMessage = async (channel, service, binding_key) => {
-  if (!channel) return;
   const appQueue = await channel.assertQueue(QUEUE_NAME);
   channel.bindQueue(appQueue.queue, EXCHANGE_NAME, CUSTOMER_BINDING_KEY);
   channel.consume(appQueue.queue, (data) => {

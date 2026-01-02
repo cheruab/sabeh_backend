@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const amqplib = require("amqplib");
 const {
   APP_SECRET,
-  QUEUE_NAME,
+  BASE_URL,
   EXCHANGE_NAME,
   MSG_QUEUE_URL,
 } = require("../config");
@@ -23,6 +23,7 @@ module.exports.ValidatePassword = async (
   salt
 ) => {
   return await bcrypt.compare(enteredPassword, savedPassword);
+
 };
 
 module.exports.GenerateSignature = async (payload) => {
@@ -55,33 +56,48 @@ module.exports.FormateData = (data) => {
   }
 };
 
+// as we are going to implement message queue so we won't we needed these functions
+// module.exports.PublishCustomerEvent = async (payload) => {
+//   axios.post("http://localhost:8000/customer/app-events/", {
+//     payload,
+//   });
+
+// };
+
+// module.exports.PublishShoppingEvent = async (payload) => {
+
+//   axios.post(`http://localhost:8000/shopping/app-events/`, {
+//     payload,
+//   });
+// };
+
+
 /* ---------------------------------------------------------Message Broker -------------------------------------------------------*/
 
+// create a channel
 module.exports.CreateChannel = async () => {
-  if (process.env.ENABLE_MQ !== "true") {
-    console.log("⚠️ Message Queue disabled");
-    return null;
-  }
-
   try {
     const connection = await amqplib.connect(MSG_QUEUE_URL);
     const channel = await connection.createChannel();
     await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
     return channel;
   } catch (error) {
-    console.error("❌ MQ connection failed:", error.message);
-    return null;
+    throw error;
   }
 };
 
+// publish messages
 module.exports.PublishMessage = async (channel, binding_key, message) => {
-  if (!channel) return;
-  channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message));
-  console.log("Sent: ", message);
+  try {
+    channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(message));
+    console.log("Sent: ", message);
+  } catch (error) {
+    throw error;
+  }
 };
 
+// subscribe messages
 module.exports.SubscribeMessage = async (channel, service, binding_key) => {
-  if (!channel) return;
   const appQueue = await channel.assertQueue(QUEUE_NAME);
   channel.bindQueue(appQueue.queue, EXCHANGE_NAME, binding_key);
   channel.consume(appQueue.queue, (data) => {

@@ -1,9 +1,9 @@
-// server.js - Root file for Railway deployment
+// server.js - Root file that starts all services
 const { spawn } = require('child_process');
 
 console.log('🚀 Starting all microservices...');
 
-// Only start internal services if needed
+// Start all services as child processes
 const services = [
   { name: 'Customer', path: './customer/src/index.js', port: 8001 },
   { name: 'Product', path: './products/src/index.js', port: 8002 },
@@ -11,39 +11,36 @@ const services = [
   { name: 'Group', path: './group/src/index.js', port: 8004 },
 ];
 
-// Spawn internal services
+// Start each service
 services.forEach(service => {
-  // Skip services if you want Railway to only run Gateway
-  const child = spawn('node', [service.path], {
+  const process = spawn('node', [service.path], {
     stdio: 'inherit',
-    env: { ...process.env },
+    env: { ...process.env }
   });
 
-  child.on('error', err => {
+  process.on('error', (err) => {
     console.error(`❌ Error starting ${service.name} service:`, err);
   });
 
   console.log(`✅ ${service.name} service started on port ${service.port}`);
 });
 
-// Start gateway on Railway's assigned port
+// Start gateway last (after a small delay to ensure services are up)
 setTimeout(() => {
   console.log('🌐 Starting Gateway...');
-  
-  const PORT = process.env.PORT || 8000; // Railway sets this automatically
   const gateway = spawn('node', ['./gateway/index.js'], {
     stdio: 'inherit',
-    env: { ...process.env, PORT }, // Inject PORT into gateway
+    env: { ...process.env }
   });
 
-  gateway.on('error', err => {
+  gateway.on('error', (err) => {
     console.error('❌ Error starting Gateway:', err);
   });
 
-  console.log(`✅ Gateway started on port ${PORT}`);
-}, 3000);
+  console.log('✅ Gateway started on port 8000');
+}, 3000); // Wait 3 seconds for services to start
 
-// Graceful shutdown
+// Keep the process alive
 process.on('SIGINT', () => {
   console.log('🛑 Shutting down all services...');
   process.exit();
