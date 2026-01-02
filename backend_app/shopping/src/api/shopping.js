@@ -6,7 +6,10 @@ const { CUSTOMER_BINDING_KEY } = require("../config");
 module.exports = (app,channel) => {
 
   const service = new ShoppingService();
-  SubscribeMessage(channel,service);
+
+  if (channel) {
+    SubscribeMessage(channel, service);
+  }
 
   app.post("/order", UserAuth, async (req, res, next) => {
     const { _id } = req.user;

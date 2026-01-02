@@ -3,6 +3,9 @@ const UserAuth = require("./middlewares/auth");
 
 module.exports = (app) => {
   const service = new GroupService();
+  if (channel) {
+    SubscribeMessage(channel, service);
+  }
 
   // Create a new group (Leader)
   app.post("/create", UserAuth, async (req, res, next) => {

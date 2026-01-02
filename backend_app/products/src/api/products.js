@@ -7,6 +7,9 @@ const { createRegex } = require("../utils/regex");
 
 module.exports = (app, channel) => {
   const service = new ProductService();
+  if (channel) {
+    SubscribeMessage(channel, service);
+  }
 
   app.post("/create", async (req, res, next) => {
     console.log(req.body);

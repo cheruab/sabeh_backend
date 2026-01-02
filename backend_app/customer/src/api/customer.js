@@ -7,9 +7,9 @@ const OTPService = require("../services/otp-service");
 module.exports = (app, channel) => {
   const service = new CustomerService();
 
-  // To listen
-  SubscribeMessage(channel, service);
-
+  if (channel) {
+    SubscribeMessage(channel, service);
+  }
   // ===== NEW PHONE AUTH ENDPOINTS =====
 
   // Step 1: Send OTP for Signup
