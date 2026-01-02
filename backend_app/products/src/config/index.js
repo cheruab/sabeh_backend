@@ -10,8 +10,7 @@ const dotEnv = require("dotenv");
 require('dotenv').config();
 
 module.exports = {
-  PORT: process.env.PRODUCT_PORT || 8002,
-  PORT: process.env.PORT,
+  PORT: 8002,
   DB_URL: process.env.MONGODB_URI,
   APP_SECRET: process.env.APP_SECRET,
   MSG_QUEUE_URL: process.env.MSG_QUEUE_URL,
