@@ -13,12 +13,12 @@ const services = [
 
 // Start each service
 services.forEach(service => {
-  const process = spawn('node', [service.path], {
+  const childProcess = spawn('node', [service.path], {
     stdio: 'inherit',
-    env: { ...process.env }
+    env: process.env
   });
 
-  process.on('error', (err) => {
+  childProcess.on('error', (err) => {
     console.error(`❌ Error starting ${service.name} service:`, err);
   });
 
@@ -30,7 +30,7 @@ setTimeout(() => {
   console.log('🌐 Starting Gateway...');
   const gateway = spawn('node', ['./gateway/index.js'], {
     stdio: 'inherit',
-    env: { ...process.env }
+    env: process.env
   });
 
   gateway.on('error', (err) => {
