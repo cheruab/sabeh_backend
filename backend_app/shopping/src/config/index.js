@@ -10,6 +10,7 @@ const dotEnv = require("dotenv");
 require('dotenv').config();
 
 module.exports = {
+  PORT: process.env.SHOPPING_PORT || 8003,
   PORT: process.env.PORT,
   DB_URL: process.env.MONGODB_URI,
   APP_SECRET: process.env.APP_SECRET,
