@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 
 console.log('🚀 Starting all microservices...');
 
-// Start all services as child processes
+// Define services
 const services = [
   { name: 'Customer', path: './customer/src/index.js', port: 8001 },
   { name: 'Product', path: './products/src/index.js', port: 8002 },
@@ -13,34 +13,35 @@ const services = [
 
 // Start each service
 services.forEach(service => {
-  const process = spawn('node', [service.path], {
+  const child = spawn('node', [service.path], {
     stdio: 'inherit',
-    env: { ...process.env }
+    env: { ...process.env }, // ✅ real Node process
   });
 
-  process.on('error', (err) => {
+  child.on('error', err => {
     console.error(`❌ Error starting ${service.name} service:`, err);
   });
 
   console.log(`✅ ${service.name} service started on port ${service.port}`);
 });
 
-// Start gateway last (after a small delay to ensure services are up)
+// Start gateway last
 setTimeout(() => {
   console.log('🌐 Starting Gateway...');
+
   const gateway = spawn('node', ['./gateway/index.js'], {
     stdio: 'inherit',
-    env: { ...process.env }
+    env: { ...process.env },
   });
 
-  gateway.on('error', (err) => {
+  gateway.on('error', err => {
     console.error('❌ Error starting Gateway:', err);
   });
 
   console.log('✅ Gateway started on port 8000');
-}, 3000); // Wait 3 seconds for services to start
+}, 3000);
 
-// Keep the process alive
+// Graceful shutdown
 process.on('SIGINT', () => {
   console.log('🛑 Shutting down all services...');
   process.exit();
