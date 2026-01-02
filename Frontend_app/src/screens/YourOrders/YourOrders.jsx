@@ -9,6 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 import { useDispatch } from "react-redux";
 import { logout } from '../../redux/userSlice';
 import { ShoppingBagIcon } from 'react-native-heroicons/outline';
+import BASE_URL from '../../config';
 
 export const YourOrders = () => {
   const screenWidth = Dimensions.get('window').width;
@@ -29,7 +30,7 @@ export const YourOrders = () => {
       setError(null);
       
       // Use correct URL for Android emulator
-      const res = await axios.get(`sabehbackend-production.up.railway.app/shopping/orders`, {
+      const res = await axios.get(`${BASE_URL}/shopping/orders`, {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
           'Content-Type': 'application/json',

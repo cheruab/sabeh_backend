@@ -21,6 +21,7 @@ import { calculateTotalPrice } from '../../utils/utils';
 import { RESET } from '../../redux/cartSlice';
 import { useNavigation } from '@react-navigation/native';
 import { logout } from '../../redux/userSlice';
+import BASE_URL from '../../config';
 
 export const DeliveryScreen = () => {
   const route = useRoute();
@@ -98,7 +99,7 @@ export const DeliveryScreen = () => {
       console.log(JSON.stringify(orderPayload, null, 2));
       
       const res = await axios.post(
-        `sabehbackend-production.up.railway.app/shopping/order`,
+        `${BASE_URL}/shopping/order`,
         orderPayload,
         {
           headers: {

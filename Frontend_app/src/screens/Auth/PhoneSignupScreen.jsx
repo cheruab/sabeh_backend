@@ -15,9 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
-
-// ✅ FIXED: Changed port from 8000 to 8001
-const API_URL = 'http://localhost:8001';
+import { BASE_URL } from '../../config'; // ✅ Use config
 
 export const PhoneSignupScreen = () => {
   const navigation = useNavigation();
@@ -26,12 +24,9 @@ export const PhoneSignupScreen = () => {
   const [confirm, setConfirm] = useState(null);
 
   const formatPhoneNumber = (text) => {
-    // Remove all non-digits
     const cleaned = text.replace(/\D/g, '');
     
-    // Add country code if not present
     if (cleaned.length > 0 && !cleaned.startsWith('251')) {
-      // Assuming Ethiopian numbers, adjust as needed
       if (cleaned.startsWith('0')) {
         return '251' + cleaned.substring(1);
       } else if (cleaned.startsWith('9')) {
@@ -42,77 +37,78 @@ export const PhoneSignupScreen = () => {
     return cleaned;
   };
 
-const handleSendOTP = async () => {
-  try {
-    const cleanedPhone = phone.replace(/\D/g, '');
-    
-    if (!cleanedPhone || cleanedPhone.length < 9) {
-      Alert.alert('Error', 'Please enter a valid phone number (at least 9 digits)');
-      return;
-    }
-
-    setLoading(true);
-    
-    const formattedPhone = formatPhoneNumber(phone);
-    const phoneWithPlus = `+${formattedPhone}`;
-     
-    console.log('Sending OTP to:', phoneWithPlus);
-
-    // Check if phone already registered and get OTP
-    const checkResponse = await axios.post(
-      `${API_URL}/auth/signup/send-otp`,
-      { phone: formattedPhone },
-      {
-        timeout: 10000,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+  const handleSendOTP = async () => {
+    try {
+      const cleanedPhone = phone.replace(/\D/g, '');
+      
+      if (!cleanedPhone || cleanedPhone.length < 9) {
+        Alert.alert('Error', 'Please enter a valid phone number (at least 9 digits)');
+        return;
       }
-    );
-    
-    if (!checkResponse.data.success) {
+
+      setLoading(true);
+      
+      const formattedPhone = formatPhoneNumber(phone);
+      const phoneWithPlus = `+${formattedPhone}`;
+       
+      console.log('🌐 API URL:', BASE_URL);
+      console.log('📱 Sending OTP to:', phoneWithPlus);
+
+      // Check if phone already registered and get OTP
+      const checkResponse = await axios.post(
+        `${BASE_URL}/customer/auth/signup/send-otp`,
+        { phone: formattedPhone },
+        {
+          timeout: 10000,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      if (!checkResponse.data.success) {
+        setLoading(false);
+        Alert.alert('Error', checkResponse.data.error || 'Failed to send OTP');
+        return;
+      }
+
+      // ✅ SKIP FIREBASE - Go directly to OTP screen
       setLoading(false);
-      Alert.alert('Error', checkResponse.data.error || 'Failed to send OTP');
-      return;
+
+      // Navigate to OTP screen
+      navigation.navigate('OTPVerification', {
+        phone: formattedPhone,
+        phoneWithPlus,
+        confirmation: null,
+        type: 'signup',
+        devOTP: checkResponse.data.otp,
+      });
+       
+    } catch (error) { 
+      setLoading(false);
+      console.error('❌ Send OTP error:', error.message);
+      console.error('Response:', error.response?.data);
+      Alert.alert(
+        'Error',
+        error.response?.data?.error || error.message || 'Failed to send OTP. Please check your internet connection.'
+      );
     }
-
-    // ✅ SKIP FIREBASE - Go directly to OTP screen
-    setLoading(false);
-
-    // Navigate to OTP screen
-    navigation.navigate('OTPVerification', {
-      phone: formattedPhone,
-      phoneWithPlus,
-      confirmation: null, // No Firebase confirmation
-      type: 'signup',
-      devOTP: checkResponse.data.otp,
-    });
-     
-     
-  } catch (error) { 
-    setLoading(false);
-    console.error('Send OTP error:', error);
-    Alert.alert(
-      'Error',
-      error.response?.data?.error || error.message || 'Failed to send OTP. Please try again.'
-    );
-  }
-};
+  };
 
   // Test connection function
   const testConnection = async () => {
     try {
-      console.log('Testing connection to:', `${API_URL}/whoami`);
-      const response = await axios.get(`${API_URL}/whoami`, {
+      console.log('Testing connection to:', `${BASE_URL}/customer/whoami`);
+      const response = await axios.get(`${BASE_URL}/customer/whoami`, {
         timeout: 5000,
       });
       console.log('✅ Backend connected:', response.data);
-      Alert.alert('Success', `Backend connected!\n${response.data.msg}`);
+      Alert.alert('Success', `Backend connected!\n${response.data.msg || 'OK'}`);
     } catch (error) {
       console.error('❌ Backend connection failed:', error.message);
       Alert.alert(
         'Connection Failed',
-        `Cannot reach backend server.\nError: ${error.message}\n\nMake sure backend is running on port 8001`
+        `Cannot reach backend server.\nError: ${error.message}\n\nAPI: ${BASE_URL}`
       );
     }
   };

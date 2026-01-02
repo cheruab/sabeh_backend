@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-const API_URL = 'http://localhost:8001';
+const API_URL = `${BASE_URL}/customer`;
 
 import axios from 'axios';
 

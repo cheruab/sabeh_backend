@@ -12,6 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {Loader} from '../../components/Loader';
+import { BASE_URL } from '../../config';
 
 export const SelectAddress = ({show, setShow}) => {
   const screenWidth = Dimensions.get('window').width;
@@ -24,7 +25,7 @@ export const SelectAddress = ({show, setShow}) => {
   async function saveAddress() {
     try {
       setLoading(true);
-      const res = await axios.get(`sabehbackend-production.up.railway.app/customer/addresses`, {
+      const res = await axios.get(`${BASE_URL}/customer/addresses`, {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
           // You can also include other headers as needed.

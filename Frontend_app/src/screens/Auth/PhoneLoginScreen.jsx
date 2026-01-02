@@ -21,7 +21,7 @@ import auth from '@react-native-firebase/auth';
 import { EyeIcon, EyeSlashIcon } from 'react-native-heroicons/outline';
 
 // ✅ FIXED: Use localhost after adb reverse
-const API_URL = 'http://localhost:8001';
+const API_URL = `${BASE_URL}/customer`;
 
 export const PhoneLoginScreen = () => {
   const navigation = useNavigation();

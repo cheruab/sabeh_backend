@@ -14,6 +14,7 @@ import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {Loader} from '../../components/Loader';
 import {useNavigation} from '@react-navigation/native';
+import { BASE_URL } from '../../config';
 
 export const EnterAddress = ({show, setShow, latitude, longitude}) => {
   const screenWidth = Dimensions.get('window').width;
@@ -27,8 +28,7 @@ export const EnterAddress = ({show, setShow, latitude, longitude}) => {
   async function saveAddress() {
     try {
       setLoading(true);
-      const res = await axios.post(
-  `sabehbackend-production.up.railway.app/customer/address`,
+      const res = await axios.post(`${BASE_URL}/customer/address`,
         {
           type: type,
           completeAddress: completeAddress,
