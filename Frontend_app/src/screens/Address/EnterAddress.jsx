@@ -28,7 +28,7 @@ export const EnterAddress = ({show, setShow, latitude, longitude}) => {
     try {
       setLoading(true);
       const res = await axios.post(
-  `http://10.0.2.2:8000/customer/address`,
+  `sabehbackend-production.up.railway.app/customer/address`,
         {
           type: type,
           completeAddress: completeAddress,

@@ -20,7 +20,7 @@ export const Bar = ({
     setLoading(true);
     try {
       const response = await axios.get(
-  `http://10.0.2.2:8000/product/search/products?q=${searchQuery}`,
+  `sabehbackend-production.up.railway.app/product/search/products?q=${searchQuery}`,
 );
       // Assuming your API returns an array of products
       const products = response.data;

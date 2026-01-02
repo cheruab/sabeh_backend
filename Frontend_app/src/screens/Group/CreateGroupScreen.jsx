@@ -57,7 +57,7 @@ export const CreateGroupScreen = () => {
     try {
       console.log('=== CREATE GROUP START ===');
       console.log('📍 Delivery Address from state:', deliveryAddress);
-      console.log('URL: http://10.0.2.2:8000/group/create');
+      console.log('URL: sabehbackend-production.up.railway.app/group/create');
       console.log('Product:', product?._id);
       console.log('Leader:', leaderName, leaderPhone);
 
@@ -113,7 +113,7 @@ export const CreateGroupScreen = () => {
 
       console.log('Sending request...');
       const response = await axios.post(
-        'http://10.0.2.2:8000/group/create',
+        'sabehbackend-production.up.railway.app/group/create',
         groupData,
         {
           headers: {

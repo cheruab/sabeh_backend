@@ -25,7 +25,7 @@ import {
 } from 'react-native-heroicons/outline';
 
 // Use correct API URL for Android Emulator
-const API_BASE_URL = 'http://10.0.2.2:8000/group';
+const API_BASE_URL = 'sabehbackend-production.up.railway.app/group';
 
 export const GroupOptionsScreen = () => {
   const route = useRoute();

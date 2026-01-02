@@ -29,7 +29,7 @@ export const YourOrders = () => {
       setError(null);
       
       // Use correct URL for Android emulator
-      const res = await axios.get(`http://10.0.2.2:8000/shopping/orders`, {
+      const res = await axios.get(`sabehbackend-production.up.railway.app/shopping/orders`, {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
           'Content-Type': 'application/json',

@@ -98,7 +98,7 @@ export const DeliveryScreen = () => {
       console.log(JSON.stringify(orderPayload, null, 2));
       
       const res = await axios.post(
-        `http://10.0.2.2:8000/shopping/order`,
+        `sabehbackend-production.up.railway.app/shopping/order`,
         orderPayload,
         {
           headers: {

@@ -58,7 +58,7 @@ export const CategoryProducts = ({ route }) => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://10.0.2.2:8000/customer/wishlist`,
+        `sabehbackend-production.up.railway.app/customer/wishlist`,
         {
           headers: {
             Authorization: `Bearer ${currentUser.token}`,
@@ -205,7 +205,7 @@ export const CategoryProducts = ({ route }) => {
                   onToggleWishlist={async productId => {
                     try {
                       const resp = await axios.put(
-                        'http://10.0.2.2:8000/product/wishlist',
+                        'sabehbackend-production.up.railway.app/product/wishlist',
                         { _id: productId },
                         {
                           headers: {

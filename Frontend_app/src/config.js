@@ -2,7 +2,7 @@ import axios from "axios";
 
 // For Android Emulator, use 10.0.2.2 instead of localhost
 // Main service base URL (Customer, Product, Shopping)
-export const BASE_URL = "http://10.0.2.2:8000";
+export const BASE_URL = "sabehbackend-production.up.railway.app";
 
 // Group service base URL - runs on port 8004
 export const GROUP_BASE_URL = "http://10.0.2.2:8004";

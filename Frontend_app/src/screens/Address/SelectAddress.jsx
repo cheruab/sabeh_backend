@@ -24,7 +24,7 @@ export const SelectAddress = ({show, setShow}) => {
   async function saveAddress() {
     try {
       setLoading(true);
-      const res = await axios.get(`http://10.0.2.2:8000/customer/addresses`, {
+      const res = await axios.get(`sabehbackend-production.up.railway.app/customer/addresses`, {
         headers: {
           Authorization: `Bearer ${currentUser.token}`,
           // You can also include other headers as needed.

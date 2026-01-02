@@ -55,7 +55,7 @@ export const GroupDetailScreen = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://10.0.2.2:8000/group/${groupCode}`
+        `sabehbackend-production.up.railway.app/group/${groupCode}`
       );
       setGroup(response.data);
       dispatch(setCurrentGroup(response.data));
@@ -137,7 +137,7 @@ Join now: ${shareUrl}`;
       setJoining(true);
 
       const response = await axios.post(
-        `http://10.0.2.2:8000/group/${groupCode}/join`,
+        `sabehbackend-production.up.railway.app/group/${groupCode}/join`,
         {
           name: joinName,
           phone: joinPhone,
