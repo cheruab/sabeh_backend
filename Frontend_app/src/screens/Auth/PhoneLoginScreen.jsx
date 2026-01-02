@@ -144,7 +144,7 @@ export const PhoneLoginScreen = () => {
           <View style={styles.logoContainer}>
             <Image
               style={styles.logo}
-              source={require('../../images/logo.png')}
+              source={require('../../images/sabehlogo.png')}
             />
             <Text style={styles.appName}>Sabeh</Text>
             <Text style={styles.tagline}>Social Buying Platform</Text>
@@ -187,6 +187,7 @@ export const PhoneLoginScreen = () => {
                 <Text style={styles.countryCodeText}>🇪🇹 +251</Text>
               </View>
               <TextInput
+                
                 style={styles.phoneInput}
                 placeholder="912345678"
                 placeholderTextColor="#999"

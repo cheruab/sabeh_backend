@@ -31,7 +31,7 @@ export const ProductCard = ({item, wishlist, onToggleWishlist}) => {
       <View style={styles.topRow}>
         {discount > 0 && (
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>{discount}%</Text>
+            <Text style={styles.badgeText}>{discount}% OFF</Text>
           </View>
         )}
         <TouchableOpacity
