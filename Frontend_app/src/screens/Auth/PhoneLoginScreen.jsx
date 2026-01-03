@@ -21,8 +21,6 @@ import auth from '@react-native-firebase/auth';
 import { EyeIcon, EyeSlashIcon } from 'react-native-heroicons/outline';
 import { BASE_URL } from '../../config';
 
-
-
 export const PhoneLoginScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -31,7 +29,24 @@ export const PhoneLoginScreen = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('password'); // 'password' or 'otp'
+  const [loginMethod, setLoginMethod] = useState('password');
+
+  // 🆕 DEMO MODE LOGIN - NO CREDENTIALS NEEDED
+  const handleDemoLogin = () => {
+    const mockUser = {
+      id: 'demo_user_12345',
+      name: 'Demo',
+      lastName: 'User',
+      phone: '251912345678',
+      email: 'demo@sabeh.com',
+      isAdmin: false,
+      token: 'demo_token_for_testing_purposes_only'
+    };
+
+    dispatch(loginSuccess(mockUser));
+    Alert.alert('Success', '🎉 Demo Mode - Logged in successfully!');
+    navigation.replace("Home");
+  };
 
   const formatPhoneNumber = (text) => {
     const cleaned = text.replace(/\D/g, '');
@@ -58,9 +73,9 @@ export const PhoneLoginScreen = () => {
       const formattedPhone = formatPhoneNumber(phone);
 
       const response = await axios.post(
-  `${BASE_URL}/customer/auth/login/phone`,
-  { phone: formattedPhone, password }
-);
+        `${BASE_URL}/customer/auth/login/phone`,
+        { phone: formattedPhone, password }
+      );
       setLoading(false);
 
       if (response.data.message) {
@@ -96,11 +111,10 @@ export const PhoneLoginScreen = () => {
       const formattedPhone = formatPhoneNumber(phone);
       const phoneWithPlus = `+${formattedPhone}`;
 
-      // Send OTP
-     const response = await axios.post(
-  `${BASE_URL}/customer/auth/login/otp/send`,
-  { phone: formattedPhone }
-);
+      const response = await axios.post(
+        `${BASE_URL}/customer/auth/login/otp/send`,
+        { phone: formattedPhone }
+      );
 
       if (!response.data.success) {
         setLoading(false);
@@ -108,12 +122,10 @@ export const PhoneLoginScreen = () => {
         return;
       }
 
-      // Firebase OTP
       const confirmation = await auth().signInWithPhoneNumber(phoneWithPlus);
 
       setLoading(false);
 
-      // Navigate to OTP screen
       navigation.navigate('OTPVerification', {
         phone: formattedPhone,
         phoneWithPlus,
@@ -147,6 +159,25 @@ export const PhoneLoginScreen = () => {
             />
             <Text style={styles.appName}>Sabeh</Text>
             <Text style={styles.tagline}>Social Buying Platform</Text>
+          </View>
+
+          {/* 🆕 DEMO MODE BUTTON - VERY PROMINENT */}
+          <TouchableOpacity
+            style={styles.demoButton}
+            onPress={handleDemoLogin}>
+            <Text style={styles.demoButtonText}>
+              🎯 DEMO MODE - Quick Login
+            </Text>
+            <Text style={styles.demoButtonSubtext}>
+              (No credentials needed - For testing only)
+            </Text>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
           </View>
 
           {/* Login Method Tabs */}
@@ -186,7 +217,6 @@ export const PhoneLoginScreen = () => {
                 <Text style={styles.countryCodeText}>🇪🇹 +251</Text>
               </View>
               <TextInput
-                
                 style={styles.phoneInput}
                 placeholder="912345678"
                 placeholderTextColor="#999"
@@ -269,7 +299,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   logo: {
     width: 80,
@@ -286,6 +316,48 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginTop: 4,
+  },
+  // 🆕 DEMO BUTTON STYLES
+  demoButton: {
+    backgroundColor: '#FF9800',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#FF9800',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: '#F57C00',
+  },
+  demoButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  demoButtonSubtext: {
+    color: '#FFF3E0',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: 14,
+    color: '#999',
+    fontWeight: '600',
   },
   tabContainer: {
     flexDirection: 'row',
