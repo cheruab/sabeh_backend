@@ -60,17 +60,44 @@ const styles = StyleSheet.create({
     backgroundColor: "#0d9903",
     color: "white",
     marginTop: PixelRatio.getPixelSizeForLayoutSize(2),
+  },
+  testButton: {
+    height: 40,
+    width: "80%",
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+    backgroundColor: "#FF9800",
+    color: "white",
+    marginTop: 10,
   }
 });
 
 export const Login = ({ }) => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  const [phone, setPhone] = useState(''); // Changed from email to phone
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.user);
   const screenWidth = Dimensions.get('window').width;
+
+  // 🆕 AUTO-LOGIN FOR TESTING (DEMO MODE)
+  const handleDemoLogin = () => {
+    // Mock user data - no backend call needed
+    const mockUser = {
+      id: 'demo_user_12345',
+      name: 'Demo',
+      lastName: 'User',
+      phone: '251912345678',
+      email: 'demo@sabeh.com',
+      isAdmin: false,
+      token: 'demo_token_for_testing_purposes_only'
+    };
+
+    dispatch(loginSuccess(mockUser));
+    ToastAndroid.show('🎉 Demo Mode - Logged in!', ToastAndroid.SHORT);
+  };
 
   // Format phone number helper
   const formatPhoneNumber = (text: string) => {
@@ -99,7 +126,6 @@ export const Login = ({ }) => {
 
       dispatch(loginStart());
       
-      // ✅ Use the CORRECT endpoint
       const response = await customerAxiosInstance.post('/auth/login/phone', {
         phone: formattedPhone,
         password: password,
@@ -147,6 +173,16 @@ export const Login = ({ }) => {
                 <Text style={styles.mainheading}>Sabeh Grocery app</Text>
                 <Text style={styles.dusriheading}>Log in with Phone</Text>
                 
+                {/* 🆕 DEMO LOGIN BUTTON - PROMINENT PLACEMENT */}
+                <TouchableOpacity
+                  onPress={handleDemoLogin}
+                  style={styles.testButton}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+                    🎯 DEMO MODE - Quick Login
+                  </Text>
+                </TouchableOpacity>
+
                 {/* Phone Input */}
                 <TextInput
                   style={styles.input}
