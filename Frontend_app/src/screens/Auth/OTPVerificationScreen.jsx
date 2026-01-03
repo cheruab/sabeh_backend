@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { BASE_URL } from '../../config';
 
-const API_URL = `${BASE_URL}/customer`;
 
 import axios from 'axios';
 
@@ -88,27 +88,23 @@ export const OTPVerificationScreen = () => {
           await confirmation.confirm(finalOTP);
         } catch (firebaseError) {
           console.log('Firebase verification failed:', firebaseError);
-          // Continue with backend verification even if Firebase fails
         }
       }
 
-      // Verify with backend
-     const response = await axios.post(
-  `${API_URL}/auth/signup/verify-otp`,
-  { phone, otp: finalOTP }
-);
+      // ✅ Use BASE_URL directly
+      const response = await axios.post(
+        `${BASE_URL}/customer/auth/${type === 'signup' ? 'signup' : 'login'}/verify-otp`,
+        { phone, otp: finalOTP }
+      );
           
       setLoading(false);
 
       if (response.data.success) {
         if (type === 'signup') {
-          // Navigate to complete profile
           navigation.navigate('CompleteProfile', { phone });
         } else {
-          // Login successful
           Alert.alert('Success', 'Login successful!');
           navigation.replace("Home");
-          // Handle login success (navigate to home, etc.)
         }
       } else {
         Alert.alert('Error', response.data.error || 'Invalid OTP');
@@ -130,10 +126,11 @@ export const OTPVerificationScreen = () => {
       setResendTimer(60);
       setOTP(['', '', '', '', '', '']);
 
-     const response = await axios.post(
-  `${API_URL}/customer/auth/${type}/send-otp`,
-  { phone }
-);
+      // ✅ Use BASE_URL directly
+      const response = await axios.post(
+        `${BASE_URL}/customer/auth/${type}/send-otp`,
+        { phone }
+      );
 
       setLoading(false);
 
@@ -148,6 +145,8 @@ export const OTPVerificationScreen = () => {
       Alert.alert('Error', 'Failed to resend code. Please try again.');
     }
   };
+
+ 
 
   return (
     <>

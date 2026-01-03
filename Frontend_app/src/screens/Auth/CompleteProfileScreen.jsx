@@ -18,9 +18,9 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../redux/userSlice';
 import axios from 'axios';
 import { EyeIcon, EyeSlashIcon } from 'react-native-heroicons/outline';
+import { BASE_URL } from '../../config';
 
-// ✅ FIXED: Use localhost after adb reverse
-const API_URL = `${BASE_URL}/customer`;
+
 
 export const CompleteProfileScreen = () => {
   const navigation = useNavigation();
@@ -41,9 +41,8 @@ export const CompleteProfileScreen = () => {
     return pwd.length >= 6;
   };
 
-  const handleComplete = async () => {
+ const handleComplete = async () => {
     try {
-      // Validation
       if (!name.trim()) {
         Alert.alert('Error', 'Please enter your first name');
         return;
@@ -71,9 +70,9 @@ export const CompleteProfileScreen = () => {
 
       setLoading(true);
 
-      // Create account
+      // ✅ Use BASE_URL directly
       const response = await axios.post(
-        `${API_URL}/auth/signup/complete`,
+        `${BASE_URL}/customer/auth/signup/complete`,
         {
           phone,
           password,
@@ -85,7 +84,6 @@ export const CompleteProfileScreen = () => {
       setLoading(false);
 
       if (response.data.id && response.data.token) {
-        // Save to Redux
         dispatch(loginSuccess(response.data));
 
         Alert.alert(
@@ -94,9 +92,7 @@ export const CompleteProfileScreen = () => {
           [
             {
               text: 'Get Started',
-              onPress: () => {
-                // Navigate will happen automatically due to Redux state change
-              },
+              onPress: () => navigation.replace('Home'),
             },
           ]
         );
