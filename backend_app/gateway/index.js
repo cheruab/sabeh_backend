@@ -4,7 +4,7 @@ const proxy = require('express-http-proxy');
 
 const app = express();
 
-// ✅ CRITICAL: Use Railway's PORT environment variable
+// ✅ Railway provides this
 const PORT = process.env.PORT || 8000;
 
 console.log('🔧 PORT from environment:', process.env.PORT);
@@ -14,7 +14,7 @@ console.log('🎯 Gateway will listen on port:', PORT);
 app.use(cors());
 app.use(express.json());
 
-// Health check - MUST respond quickly
+// Health check
 app.get('/', (req, res) => {
     res.json({ 
         status: 'ok',
@@ -36,17 +36,42 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Proxy routes
-app.use('/customer', proxy('http://localhost:8001'));
-app.use('/product', proxy('http://localhost:8002')); 
-app.use('/shopping', proxy('http://localhost:8003'));
-app.use('/group', proxy('http://localhost:8004'));
+// Proxy routes with error handling
+app.use('/customer', proxy('http://localhost:8001', {
+    proxyReqPathResolver: (req) => {
+        return req.url;
+    }
+}));
 
-// Start server on Railway's PORT
+app.use('/product', proxy('http://localhost:8002', {
+    proxyReqPathResolver: (req) => {
+        return req.url;
+    }
+})); 
+
+app.use('/shopping', proxy('http://localhost:8003', {
+    proxyReqPathResolver: (req) => {
+        return req.url;
+    }
+}));
+
+app.use('/group', proxy('http://localhost:8004', {
+    proxyReqPathResolver: (req) => {
+        return req.url;
+    }
+}));
+
+// ✅ CRITICAL: Listen on 0.0.0.0, not localhost!
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Gateway is Listening to Port ${PORT}`);
-    console.log(`✅ Health check: http://localhost:${PORT}/health`);
+    console.log(`✅ Gateway READY on 0.0.0.0:${PORT}`);
+    console.log(`🌍 Public URL: https://sabehbackend-production.up.railway.app`);
 }).on('error', (err) => {
-    console.error('❌ Gateway Error:', err);
+    console.error('❌ Gateway failed to start:', err);
     process.exit(1);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('🛑 SIGTERM received, shutting down gracefully');
+    process.exit(0);
 });
