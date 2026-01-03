@@ -5,6 +5,7 @@ import {
 } from 'react-native-heroicons/outline';
 import {View, TextInput, TouchableOpacity} from 'react-native';
 import axios from 'axios';
+import { BASE_URL } from '../../config';
 
 export const Bar = ({
   isRecording,
@@ -16,21 +17,20 @@ export const Bar = ({
   setLoading,
   setSearchResults,
 }) => {
-  const handleSearch = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-  `sabehbackend-production.up.railway.app/product/search/products?q=${searchQuery}`,
-);
-      // Assuming your API returns an array of products
-      const products = response.data;
-      setLoading(false);
-      setSearchResults(products);
-    } catch (error) {
-      console.error('Error searching for products:', error);
-      setLoading(false);
-    }
-  };
+const handleSearch = async () => {
+  setLoading(true);
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/product/search/products?q=${searchQuery}`
+    );
+    const products = response.data;
+    setLoading(false);
+    setSearchResults(products);
+  } catch (error) {
+    console.error('Error searching for products:', error);
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     handleSearch();

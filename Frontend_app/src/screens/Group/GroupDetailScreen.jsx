@@ -28,6 +28,7 @@ import {
   MapPinIcon,
   UserIcon,
 } from 'react-native-heroicons/outline';
+import { BASE_URL } from '../../config';
 
 export const GroupDetailScreen = () => {
   const route = useRoute();
@@ -52,20 +53,21 @@ export const GroupDetailScreen = () => {
 
   // Fetch group details
   const fetchGroup = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(
-        `sabehbackend-production.up.railway.app/group/${groupCode}`
-      );
-      setGroup(response.data);
-      dispatch(setCurrentGroup(response.data));
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.error('Fetch group error:', error);
-      Alert.alert('Error', 'Failed to load group details');
-    }
-  };
+  try {
+    setLoading(true);
+    const response = await axios.get(
+      `${BASE_URL}/group/${groupCode}`
+    );
+    setGroup(response.data);
+    dispatch(setCurrentGroup(response.data));
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
+    console.error('Fetch group error:', error);
+    Alert.alert('Error', 'Failed to load group details');
+  }
+};
+
 
   // Calculate time left
   useEffect(() => {
@@ -137,19 +139,19 @@ Join now: ${shareUrl}`;
       setJoining(true);
 
       const response = await axios.post(
-        `sabehbackend-production.up.railway.app/group/${groupCode}/join`,
-        {
-          name: joinName,
-          phone: joinPhone,
-          quantity: parseInt(quantity) || 1,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser.token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+  `${BASE_URL}/group/${groupCode}/join`,
+  {
+    name: joinName,
+    phone: joinPhone,
+    quantity: parseInt(quantity) || 1,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${currentUser.token}`,
+      'Content-Type': 'application/json',
+    },
+  }
+);
 
       setGroup(response.data);
       dispatch(updateGroup(response.data));

@@ -17,6 +17,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { addGroup, setLoading, setError } from '../../redux/groupSlice';
+import { BASE_URL } from '../../config';
 
 export const CreateGroupScreen = () => {
   const route = useRoute();
@@ -112,8 +113,8 @@ export const CreateGroupScreen = () => {
       console.log('🔍 Specifically checking address:', groupData.deliveryAddress);
 
       console.log('Sending request...');
-      const response = await axios.post(
-        'sabehbackend-production.up.railway.app/group/create',
+        const response = await axios.post(
+        `${BASE_URL}/group/create`,
         groupData,
         {
           headers: {

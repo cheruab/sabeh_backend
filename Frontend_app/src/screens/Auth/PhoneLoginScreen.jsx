@@ -19,9 +19,9 @@ import { loginSuccess, loginFailure } from '../../redux/userSlice';
 import axios from 'axios';
 import auth from '@react-native-firebase/auth';
 import { EyeIcon, EyeSlashIcon } from 'react-native-heroicons/outline';
+import { BASE_URL } from '../../config';
 
-// ✅ FIXED: Use localhost after adb reverse
-const API_URL = `${BASE_URL}/customer`;
+
 
 export const PhoneLoginScreen = () => {
   const navigation = useNavigation();
@@ -58,10 +58,9 @@ export const PhoneLoginScreen = () => {
       const formattedPhone = formatPhoneNumber(phone);
 
       const response = await axios.post(
-        `${API_URL}/auth/login/phone`,
-        { phone: formattedPhone, password }
-      );
-
+  `${BASE_URL}/customer/auth/login/phone`,
+  { phone: formattedPhone, password }
+);
       setLoading(false);
 
       if (response.data.message) {
@@ -98,10 +97,10 @@ export const PhoneLoginScreen = () => {
       const phoneWithPlus = `+${formattedPhone}`;
 
       // Send OTP
-      const response = await axios.post(
-        `${API_URL}/auth/login/otp/send`,
-        { phone: formattedPhone }
-      );
+     const response = await axios.post(
+  `${BASE_URL}/customer/auth/login/otp/send`,
+  { phone: formattedPhone }
+);
 
       if (!response.data.success) {
         setLoading(false);

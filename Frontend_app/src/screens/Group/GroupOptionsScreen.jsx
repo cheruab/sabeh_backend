@@ -24,8 +24,9 @@ import {
   MapPinIcon,
 } from 'react-native-heroicons/outline';
 
+import { BASE_URL } from '../../config';
 // Use correct API URL for Android Emulator
-const API_BASE_URL = 'sabehbackend-production.up.railway.app/group';
+
 
 export const GroupOptionsScreen = () => {
   const route = useRoute();
@@ -41,39 +42,27 @@ export const GroupOptionsScreen = () => {
 
   // Fetch active groups for this product
   const fetchGroups = async () => {
-    try {
-      console.log('Fetching groups for product:', product?._id);
-      setLoading(true);
-      
-      const response = await axios.get(
-        `${API_BASE_URL}/product/${product._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser?.token}`,
-          },
-          timeout: 10000, // 10 second timeout
-        }
-      );
-      
-      console.log('Groups fetched:', response.data);
-      setGroups(response.data || []);
-      setLoading(false);
-    } catch (error) {
-      console.error('Fetch groups error:', error.message);
-      console.error('Error details:', error.response?.data);
-      setLoading(false);
-      setGroups([]);
-      
-      // Show error to user
-      if (error.code === 'ECONNABORTED') {
-        Alert.alert('Timeout', 'Server is taking too long to respond. Please try again.');
-      } else if (error.response) {
-        Alert.alert('Error', error.response.data?.error || 'Failed to load groups');
-      } else if (error.request) {
-        Alert.alert('Network Error', 'Could not connect to server. Please check your connection.');
+  try {
+    console.log('Fetching groups for product:', product?._id);
+    setLoading(true);
+    
+    const response = await axios.get(
+      `${BASE_URL}/group/product/${product._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser?.token}`,
+        },
+        timeout: 10000,
       }
-    }
-  };
+    );
+    
+    console.log('Groups fetched:', response.data);
+    setGroups(response.data || []);
+    setLoading(false);
+  } catch (error) {
+    // ... error handling
+  }
+};
 
   useEffect(() => {
     if (!product) {

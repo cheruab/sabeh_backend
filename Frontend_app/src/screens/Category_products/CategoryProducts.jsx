@@ -20,6 +20,7 @@ import { axiosInstance } from '../../config';
 import { useSelector } from 'react-redux';
 import { Loader } from '../../components/Loader';
 import axios from 'axios';
+import { BASE_URL } from '../../config';
 
 export const CategoryProducts = ({ route }) => {
   const [products, setProducts] = useState([]);
@@ -54,24 +55,24 @@ export const CategoryProducts = ({ route }) => {
     setProducts(sortedItems);
   };
 
-  async function getWishlist() {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `sabehbackend-production.up.railway.app/customer/wishlist`,
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser.token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      setWishlist(res?.data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
+async function getWishlist() {
+  try {
+    setLoading(true);
+    const res = await axios.get(
+      `${BASE_URL}/customer/wishlist`,
+      {
+        headers: {
+          Authorization: `Bearer ${currentUser.token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    setWishlist(res?.data);
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     async function getProducts() {
@@ -205,15 +206,15 @@ export const CategoryProducts = ({ route }) => {
                   onToggleWishlist={async productId => {
                     try {
                       const resp = await axios.put(
-                        'sabehbackend-production.up.railway.app/product/wishlist',
-                        { _id: productId },
-                        {
-                          headers: {
-                            Authorization: `Bearer ${currentUser.token}`,
-                            'Content-Type': 'application/json',
-                          },
-                        }
-                      );
+                    `${BASE_URL}/product/wishlist`,
+                    { _id: productId },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${currentUser.token}`,
+                        'Content-Type': 'application/json',
+                      },
+                    }
+                  );
 
                       if (resp?.data) {
                         setWishlist([...wishlist, item]);

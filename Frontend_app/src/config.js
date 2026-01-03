@@ -1,12 +1,11 @@
-// Frontend_app/src/config.js
 import axios from "axios";
 
-// ✅ PRODUCTION URL - Replace with your actual Railway URL
-
+// ✅ ADD https:// prefix!
 const PRODUCTION_URL = "https://sabehbackend-production.up.railway.app";
 
+// ✅ For development, use your local machine IP (not localhost)
+const DEVELOPMENT_URL = "http://192.168.137.1:8000"; // Replace X with your actual IP
 
-// ✅ Automatically use production URL when building release APK
 export const BASE_URL = __DEV__ ? DEVELOPMENT_URL : PRODUCTION_URL;
 
 console.log('🌐 Using API URL:', BASE_URL);
@@ -17,13 +16,13 @@ export const axiosInstance = axios.create({
   timeout: 10000,
 });
 
-// For customer endpoints (login, addresses, etc)
+// For customer endpoints
 export const customerAxiosInstance = axios.create({
   baseURL: BASE_URL + "/customer",
   timeout: 10000,
 });
 
-// For shopping endpoints (cart, orders, etc)
+// For shopping endpoints
 export const shoppingAxiosInstance = axios.create({
   baseURL: BASE_URL + "/shopping",
   timeout: 10000,
@@ -35,7 +34,7 @@ export const groupAxiosInstance = axios.create({
   timeout: 10000,
 });
 
-// Add interceptors to log requests (helps with debugging)
+// Add interceptors
 [axiosInstance, customerAxiosInstance, shoppingAxiosInstance, groupAxiosInstance].forEach(instance => {
   instance.interceptors.request.use(
     (config) => {
