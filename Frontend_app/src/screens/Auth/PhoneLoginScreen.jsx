@@ -143,7 +143,7 @@ export const PhoneLoginScreen = () => {
           <View style={styles.logoContainer}>
             <Image
               style={styles.logo}
-              source={require('../../images/logo.png')}
+              source={require('../../images/sabehlogo.png')}
             />
             <Text style={styles.appName}>Sabeh</Text>
             <Text style={styles.tagline}>Social Buying Platform</Text>

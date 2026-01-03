@@ -116,7 +116,7 @@ export const Login = ({ }) => {
                 }}
               />
               <View style={styles.loginContainer} >
-                <Image style={styles.logo} source={require("../../images/logo.png")} />
+                <Image style={styles.logo} source={require("../../images/sabehlogo.png")} />
                 <Text style={styles.mainheading} > Sabeh Grocery app </Text>
                 <Text style={styles.dusriheading} > Log in or sign up </Text>
                 <TextInput
