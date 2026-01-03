@@ -1,7 +1,8 @@
 const GroupService = require("../services/group-service");
 const UserAuth = require("./middlewares/auth");
+const { SubscribeMessage } = require("../utils");
 
-module.exports = (app) => {
+module.exports = (app, channel) => {
   const service = new GroupService();
   if (channel) {
     SubscribeMessage(channel, service);

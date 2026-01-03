@@ -18,7 +18,7 @@ module.exports = async (app, channel) => {
   
   // Register all group routes (they don't need /group prefix)
   try {
-    group(app);
+    group(app, channel);
     console.log('✅ Group routes registered');
   } catch (err) {
     console.error('❌ Error registering group routes:', err);

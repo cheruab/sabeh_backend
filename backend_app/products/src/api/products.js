@@ -4,6 +4,7 @@ const UserAuth = require("./middlewares/auth");
 const { PublishMessage } = require("../utils");
 const { CUSTOMER_BINDING_KEY, SHOPPING_BINDING_KEY } = require("../config");
 const { createRegex } = require("../utils/regex");
+const { SubscribeMessage } = require("../utils");
 
 module.exports = (app, channel) => {
   const service = new ProductService();
