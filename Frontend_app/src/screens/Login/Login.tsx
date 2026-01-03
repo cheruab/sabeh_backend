@@ -1,9 +1,7 @@
 import React from 'react';
-import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar,ToastAndroid, Dimensions } from 'react-native';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { axiosInstance } from '../../config';
+import { Text, TextInput, StyleSheet, View, Image, SafeAreaView, TouchableOpacity, PixelRatio, StatusBar, ToastAndroid, Dimensions } from 'react-native';
+import { customerAxiosInstance } from '../../config';
 import { useNavigation } from '@react-navigation/native';
-import { PhoneLoginScreen } from './src/screens/Auth/PhoneLoginScreen';
 import { useState } from 'react';
 import { useDispatch } from "react-redux";
 import { loginFailure, loginStart, loginSuccess } from '../../redux/userSlice';
@@ -17,7 +15,7 @@ const styles = StyleSheet.create({
   },
   pic: {
     flex: 0.5,
-    objectFit:"cover"
+    objectFit: "cover"
   },
   loginContainer: {
     flex: 0.5,
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
     height: "20%",
     marginTop: PixelRatio.getPixelSizeForLayoutSize(5),
     objectFit: "contain",
-    borderRadius:10
+    borderRadius: 10
   },
   input: {
     height: 40,
@@ -63,41 +61,70 @@ const styles = StyleSheet.create({
     color: "white",
     marginTop: PixelRatio.getPixelSizeForLayoutSize(2),
   }
-
-
 });
 
 export const Login = ({ }) => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState(''); // Changed from email to phone
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state: any) => state.user);
-  console.log(currentUser);
   const screenWidth = Dimensions.get('window').width;
+
+  // Format phone number helper
+  const formatPhoneNumber = (text: string) => {
+    const cleaned = text.replace(/\D/g, '');
+    
+    if (cleaned.length > 0 && !cleaned.startsWith('251')) {
+      if (cleaned.startsWith('0')) {
+        return '251' + cleaned.substring(1);
+      } else if (cleaned.startsWith('9')) {
+        return '251' + cleaned;
+      }
+      return cleaned;
+    }
+    return cleaned;
+  };
 
   const handleLogin = async () => {
     try {
+      if (!phone || !password) {
+        ToastAndroid.show('Please enter phone and password', ToastAndroid.SHORT);
+        return;
+      }
+
       setLoading(true);
-      const data = {
-        email: email,
-        password: password,
-      };
+      const formattedPhone = formatPhoneNumber(phone);
+
       dispatch(loginStart());
-      const response = await axiosInstance.post('/login', data);
+      
+      // ✅ Use the CORRECT endpoint
+      const response = await customerAxiosInstance.post('/auth/login/phone', {
+        phone: formattedPhone,
+        password: password,
+      });
+
       if (response.data.message) {
         setLoading(false);
-        ToastAndroid.show('Authentication failed !', ToastAndroid.SHORT);
+        ToastAndroid.show('Invalid credentials', ToastAndroid.SHORT);
         dispatch(loginFailure());
         return;
       }
-      dispatch(loginSuccess(response.data));
-      ToastAndroid.show('Authentication Success !', ToastAndroid.SHORT);
-      setLoading(false);
+
+      if (response.data.id && response.data.token) {
+        dispatch(loginSuccess(response.data));
+        ToastAndroid.show('Login successful!', ToastAndroid.SHORT);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        ToastAndroid.show('Login failed', ToastAndroid.SHORT);
+        dispatch(loginFailure());
+      }
     } catch (error) {
+      console.error('Login error:', error);
       dispatch(loginFailure());
-      ToastAndroid.show('Authentication failed !', ToastAndroid.SHORT);
+      ToastAndroid.show('Login failed. Check your connection.', ToastAndroid.SHORT);
       setLoading(false);
     }
   };
@@ -109,22 +136,27 @@ export const Login = ({ }) => {
           <>
             <StatusBar backgroundColor='#ecfa23' barStyle={'dark-content'} />
 
-            <SafeAreaView style={styles.container} >
+            <SafeAreaView style={styles.container}>
               <Image style={styles.pic}
                 source={{
                   uri: 'https://i.postimg.cc/Hkd3yCBN/bg.png',
                 }}
               />
-              <View style={styles.loginContainer} >
+              <View style={styles.loginContainer}>
                 <Image style={styles.logo} source={require("../../images/sabehlogo.png")} />
-                <Text style={styles.mainheading} > Sabeh Grocery app </Text>
-                <Text style={styles.dusriheading} > Log in or sign up </Text>
+                <Text style={styles.mainheading}>Sabeh Grocery app</Text>
+                <Text style={styles.dusriheading}>Log in with Phone</Text>
+                
+                {/* Phone Input */}
                 <TextInput
                   style={styles.input}
-                  onChangeText={(text) => setEmail(text)}
-                  value={email}
-                  placeholder="Enter your Email"
+                  onChangeText={(text) => setPhone(text)}
+                  value={phone}
+                  placeholder="Phone (e.g., 0912345678)"
+                  keyboardType="phone-pad"
                 />
+                
+                {/* Password Input */}
                 <TextInput
                   style={styles.input}
                   onChangeText={(text) => setPassword(text)}
@@ -132,52 +164,53 @@ export const Login = ({ }) => {
                   secureTextEntry={true}
                   placeholder="Enter your password"
                 />
-                  <TouchableOpacity
-                    onPress={handleLogin}
-                    style={styles.button}
-                  >
-                    <Text style={
-                      {
-                        color: "white",
-                        fontWeight: "bold",
-                      }
-                    } >Continue</Text>
-                  </TouchableOpacity>
-                 // Add after the existing "Continue" button
-<TouchableOpacity
-  onPress={() => {
-    // @ts-ignore
-    navigation.navigate('PhoneSignup');
-  }}
-  style={[styles.button, { backgroundColor: '#2196F3', marginTop: 10 }]}
->
-  <Text style={{ color: "white", fontWeight: "bold" }}>
-    Sign Up with Phone
-  </Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  onPress={() => {
-    // @ts-ignore
-    navigation.navigate('PhoneLogin');
-  }}
-  style={[styles.button, { backgroundColor: '#4CAF50', marginTop: 10 }]}
->
-  <Text style={{ color: "white", fontWeight: "bold" }}>
-    Login with Phone
-  </Text>
-</TouchableOpacity>
                 
+                {/* Login Button */}
+                <TouchableOpacity
+                  onPress={handleLogin}
+                  disabled={loading}
+                  style={styles.button}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    {loading ? 'Logging in...' : 'Continue'}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* New Phone Auth Buttons */}
+                <TouchableOpacity
+                  onPress={() => {
+                    // @ts-ignore
+                    navigation.navigate('PhoneSignup');
+                  }}
+                  style={[styles.button, { backgroundColor: '#2196F3', marginTop: 10 }]}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    Sign Up with Phone
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    // @ts-ignore
+                    navigation.navigate('PhoneLogin');
+                  }}
+                  style={[styles.button, { backgroundColor: '#4CAF50', marginTop: 10 }]}
+                >
+                  <Text style={{ color: "white", fontWeight: "bold" }}>
+                    Login with OTP
+                  </Text>
+                </TouchableOpacity>
               </View>
+              
               <Text style={{
                 backgroundColor: "#d3d3d3",
                 fontSize: PixelRatio.getPixelSizeForLayoutSize(4),
                 textAlign: "center",
                 padding: 5
-              }} > By continuing, you agree to our Terms of service & Privacy policy </Text>
-            </SafeAreaView> 
-           
-          
+              }}>
+                By continuing, you agree to our Terms of service & Privacy policy
+              </Text>
+            </SafeAreaView>
           </>
       }
     </>
