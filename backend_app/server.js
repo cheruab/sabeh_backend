@@ -26,13 +26,13 @@ services.forEach(service => {
   console.log(`✅ ${service.name} service started on port ${service.port}`);
 });
 
-// ✅ Wait 5 seconds for services to fully initialize
+// ✅ INCREASED to 10 seconds for Railway's slower startup
 setTimeout(() => {
   console.log('🌐 Starting Gateway...');
   
   const gateway = spawn('node', ['./gateway/index.js'], {
     stdio: 'inherit',
-    env: process.env  // Railway's PORT will be passed automatically
+    env: process.env
   });
 
   gateway.on('error', (err) => {
@@ -42,7 +42,7 @@ setTimeout(() => {
 
   processes.push(gateway);
   
-}, 5000);  // ← Increased to 5 seconds
+}, 10000);  // ← 10 seconds
 
 // Cleanup on exit
 process.on('SIGTERM', () => {
