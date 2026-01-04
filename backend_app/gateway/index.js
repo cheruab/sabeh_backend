@@ -25,7 +25,7 @@ app.use('/product', proxy('http://localhost:8002'));
 app.use('/shopping', proxy('http://localhost:8003'));
 app.use('/group', proxy('http://localhost:8004'));
 
-// ✅ USE RAILWAY'S PORT (critical fix!)
+// ✅ Gateway uses Railway's PORT (usually 8080 on Railway)
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, '0.0.0.0', () => {
